@@ -218,6 +218,10 @@ A part of me still doesn't sit right with this fix though, as not only was a lit
 
 Nonetheless, the eraser works as it should and has given me a much easier time removing annotations.
 
+Rough sketch of sequence diagram:
+
+![EraserToolSequenceDiagram.png](EraserToolSequenceDiagram.png)
+
 [Link to merge request](https://invent.kde.org/graphics/spectacle/-/merge_requests/221)
 
 ## Implementing clear annotations

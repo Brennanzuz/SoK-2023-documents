@@ -1,0 +1,46 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+hide footbox
+
+Actor User
+activate "<<class>>\nAnnotationViewport"
+activate "<<class>>\nAnnotationDocument"
+activate "<<class>>\nEditAction"
+User -> "<<class>>\nAnnotationViewport": mousePressEvent()
+"<<class>>\nAnnotationViewport" -> "<<class>>\nAnnotationDocument": beginAction(point)
+User -> "<<class>>\nAnnotationViewport": mouseMoveEvent()
+"<<class>>\nAnnotationViewport" -> "<<class>>\nAnnotationDocument": continueAction(point)
+"<<class>>\nAnnotationDocument" -> "<<class>>\nAnnotationDocument": eraseAction(point)
+activate "<<class>>\nAnnotationDocument"
+"<<class>>\nAnnotationDocument" -> "<<class>>\nAnnotationDocument": actionAtPoint(point)
+activate "<<class>>\nAnnotationDocument"
+loop for each EditAction in m_undoStack
+    "<<class>>\nAnnotationDocument" -> "<<class>>\nEditAction": m_undoStack[i]
+    "<<class>>\nEditAction" --> "<<class>>\nAnnotationDocument": action
+    alt action->type() == FreeHand
+        "<<class>>\nAnnotationDocument" -> "<<class>>\nEditAction": contains(point)
+        create "stroker:QPainterPath"
+        "<<class>>\nEditAction" -> "stroker:QPainterPath": QPainterPathStroker()
+        create "strokePath:QPainterPath"
+        "stroker:QPainterPath" -> "strokePath:QPainterPath": createStroke(path())
+        "<<class>>\nEditAction" -> "strokePath:QPainterPath": contains(point)
+        "strokePath:QPainterPath" --> "<<class>>\nEditAction": contains(point)
+        "<<class>>\nEditAction" --> "<<class>>\nAnnotationDocument": contains(point)
+        opt contains(point)
+            "<<class>>\nAnnotationDocument" --> "<<class>>\nAnnotationDocument": action
+        end
+    else action->type() != FreeHand
+        "<<class>>\nAnnotationDocument" -> "<<class>>\nEditAction": visualGeometry().contains(point)
+        "<<class>>\nEditAction" --> "<<class>>\nAnnotationDocument": visualGeometry().contains(point)
+        opt visualGeometry().contains(point)
+            "<<class>>\nAnnotationDocument" --> "<<class>>\nAnnotationDocument": action
+        end
+    end
+    "<<class>>\nAnnotationDocument" --> "<<class>>\nAnnotationDocument": action;
+    deactivate "<<class>>\nAnnotationDocument"
+    "<<class>>\nAnnotationDocument" -> "<<class>>\nAnnotationDocument": deleteAction(action)
+    deactivate "<<class>>\nAnnotationDocument"
+    "<<class>>\nAnnotationDocument" --> User: deleted annotation
+end
+@enduml
