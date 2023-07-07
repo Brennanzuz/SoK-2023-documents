@@ -20,12 +20,18 @@ loop for each EditAction in m_undoStack
     "<<class>>\nEditAction" --> "<<class>>\nAnnotationDocument": action
     alt action->type() == FreeHand
         "<<class>>\nAnnotationDocument" -> "<<class>>\nEditAction": contains(point)
-        create "stroker:QPainterPath"
-        "<<class>>\nEditAction" -> "stroker:QPainterPath": QPainterPathStroker()
+        create "stroker:QPainterPathStroker"
+        "<<class>>\nEditAction" -> "stroker:QPainterPathStroker": QPainterPathStroker()
+        activate "stroker:QPainterPathStroker"
         create "strokePath:QPainterPath"
-        "stroker:QPainterPath" -> "strokePath:QPainterPath": createStroke(path())
+        "stroker:QPainterPathStroker" -> "strokePath:QPainterPath": createStroke(path())
+        deactivate "stroker:QPainterPathStroker"
+        destroy "stroker:QPainterPathStroker"
+        activate "strokePath:QPainterPath"
         "<<class>>\nEditAction" -> "strokePath:QPainterPath": contains(point)
         "strokePath:QPainterPath" --> "<<class>>\nEditAction": contains(point)
+        deactivate "strokePath:QPainterPath"
+        destroy "strokePath:QPainterPath"
         "<<class>>\nEditAction" --> "<<class>>\nAnnotationDocument": contains(point)
         opt contains(point)
             "<<class>>\nAnnotationDocument" --> "<<class>>\nAnnotationDocument": action
